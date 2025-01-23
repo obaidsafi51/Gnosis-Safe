@@ -18,7 +18,7 @@
 						"type": "uint256"
 					}
 				],
-				"stateMutability": "nonpayable",
+				"stateMutability": "payable",
 				"type": "constructor"
 			},
 			{
@@ -38,6 +38,38 @@
 					}
 				],
 				"name": "SafeInitialized",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newThreshold",
+						"type": "uint256"
+					}
+				],
+				"name": "ThresholdUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "transactionId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					}
+				],
+				"name": "TransactionCancelled",
 				"type": "event"
 			},
 			{
@@ -90,6 +122,50 @@
 					{
 						"indexed": true,
 						"internalType": "address",
+						"name": "destination",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes",
+						"name": "data",
+						"type": "bytes"
+					}
+				],
+				"name": "TransactionFailed",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "transactionId",
+						"type": "uint256"
+					}
+				],
+				"name": "TransactionId",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "transactionId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
 						"name": "owner",
 						"type": "address"
 					},
@@ -114,6 +190,19 @@
 				],
 				"name": "TransactionProposed",
 				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "transactionId",
+						"type": "uint256"
+					}
+				],
+				"name": "cancelTransaction",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			},
 			{
 				"inputs": [
@@ -342,11 +431,86 @@
 				],
 				"stateMutability": "view",
 				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "newThreshold",
+						"type": "uint256"
+					}
+				],
+				"name": "updateThreshold",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"stateMutability": "payable",
+				"type": "receive"
 			}
 		],
 		"devdoc": {
 			"kind": "dev",
-			"methods": {},
+			"methods": {
+				"cancelTransaction(uint256)": {
+					"details": "Cancel a transaction.",
+					"params": {
+						"transactionId": "The ID of the transaction to cancel."
+					}
+				},
+				"confirmTransaction(uint256)": {
+					"details": "Confirm a transaction.",
+					"params": {
+						"transactionId": "The ID of the transaction to confirm."
+					}
+				},
+				"executeTransaction(uint256)": {
+					"details": "Execute a confirmed transaction.",
+					"params": {
+						"transactionId": "The ID of the transaction to execute."
+					}
+				},
+				"getOwners()": {
+					"details": "Get the list of owners.",
+					"returns": {
+						"_0": "The list of owner addresses."
+					}
+				},
+				"getTransaction(uint256)": {
+					"details": "Get details of a specific transaction.",
+					"params": {
+						"transactionId": "The ID of the transaction."
+					},
+					"returns": {
+						"confirmationsCount": "The number of confirmations.",
+						"data": "The data payload.",
+						"destination": "The destination address.",
+						"executed": "Whether the transaction has been executed.",
+						"value": "The amount of ETH to send."
+					}
+				},
+				"getTransactionCount()": {
+					"details": "Get the total number of transactions.",
+					"returns": {
+						"_0": "The number of transactions."
+					}
+				},
+				"submitTransaction(address,uint256,bytes)": {
+					"details": "Submit a new transaction.",
+					"params": {
+						"data": "The data payload of the transaction.",
+						"destination": "The address to which the transaction is sent.",
+						"value": "The amount of ETH to send with the transaction."
+					}
+				},
+				"updateThreshold(uint256)": {
+					"details": "Update the threshold for confirming transactions.",
+					"params": {
+						"newThreshold": "The new threshold value."
+					}
+				}
+			},
 			"version": 1
 		},
 		"userdoc": {
@@ -371,12 +535,20 @@
 		"remappings": []
 	},
 	"sources": {
-		"GnosisSafeSimplified.sol": {
-			"keccak256": "0x5c55d34cba16c8fe384227f180be2e006a33d6b2f3a84fa44a26cf0cd05028df",
+		"@openzeppelin/contracts/security/ReentrancyGuard.sol": {
+			"keccak256": "0xa535a5df777d44e945dd24aa43a11e44b024140fc340ad0dfe42acf4002aade1",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://c05a64c8a22590e9c84251f56d660e8be15371192ba09937e72f4bd804f01f19",
-				"dweb:/ipfs/Qma7Jn4d17osBriMAekSuaFdYZyGb6ECz2NVLNT97eXpBo"
+				"bzz-raw://41319e7f621f2dc3733511332c4fd032f8e32ad2aa7fd6f665c19741d9941a34",
+				"dweb:/ipfs/QmcYR3bd862GD1Bc7jwrU9bGxrhUu5na1oP964bDCu2id1"
+			]
+		},
+		"GnosisSafeSimplified.sol": {
+			"keccak256": "0x969bca47a0e5bea3d3b010176d11e7f1c8178c9961fd6f0eb311a8c53a84a9f1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ef9e9e7e8477c1eacf2fce5c31a9ebc1e85acc160c42a163e04c17f650d4b47f",
+				"dweb:/ipfs/QmUA2KQAmSooVZjbWSPtD5wQ2LpoWrw6FdQrL7xRz6RcGb"
 			]
 		}
 	},
